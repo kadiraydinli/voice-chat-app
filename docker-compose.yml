@@ -1,0 +1,59 @@
+version: '3.8'
+services:
+  ##############
+  ## MONGO_DB ##
+  mongo_db:
+    image: mongo
+    env_file:
+      - .env
+    networks:
+      - database
+    restart: always
+    ports:
+      - ${DB_PORT}:27017
+    volumes:
+      - ./server/mongo-data:/data/db
+    container_name: mongo_db
+  ##############
+  ## SERVER ##
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    networks:
+      - webapp
+      - database
+    env_file:
+      - .env
+    ports:
+      - ${SERVER_PORT}:3000
+    volumes:
+      - ./server/src:/app/src
+    depends_on:
+      - mongo_db
+    restart: always
+    command: yarn start:dev
+    container_name: server
+  #############
+  ## CLIENT ##
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    volumes:
+      - ./client/src:/app/src
+      - ./client/public:/app/public
+    networks:
+      - webapp
+    ports:
+      - ${CLIENT_PORT}:5173
+    command: yarn dev
+    restart: always
+    container_name: client
+networks:
+  webapp:
+    driver: bridge
+  database:
+    driver: bridge

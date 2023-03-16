@@ -1,0 +1,17 @@
+{
+  "name": "voice-chat-app",
+  "version": "1.0.0",
+  "description": "Voice Chat App",
+  "scripts": {
+    "setup": "cd client && yarn install && cd .. && cd server && yarn install && cd ..",
+    "up": "docker-compose -p voice-chat-app up -d",
+    "down": "docker-compose -p voice-chat-app down",
+    "restart": "docker-compose -p voice-chat-app restart"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kadiraydinli/voice-chat-app.git"
+  },
+  "author": "Kadir Aydınlı",
+  "license": "MIT"
+}
