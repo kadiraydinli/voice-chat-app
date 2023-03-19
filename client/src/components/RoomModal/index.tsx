@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
+import { setMicrophoneOn } from '../../store/features/UI';
+import { useAppDispatch, useAppSelector } from '../../store/store';
 import ActionButton from '../ActionButton';
 import { calculateWidth } from './helper';
 import UserCard from './UserCard';
@@ -9,7 +11,8 @@ interface RoomModalProps {
 }
 
 const RoomModal: React.FC<RoomModalProps> = ({ visible, onClose }) => {
-  const [voiceOn, setVoiceOn] = useState<boolean>(false);
+  const { microphoneOn } = useAppSelector((state) => state.ui);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     document.body.style.overflow = visible ? 'hidden' : 'unset';
@@ -35,10 +38,10 @@ const RoomModal: React.FC<RoomModalProps> = ({ visible, onClose }) => {
           </div>
           <div className='flex justify-center gap-10 pt-3'>
             <ActionButton
-              type={voiceOn ? 'micOn' : 'micOff'}
-              color={voiceOn ? 'gray' : 'red'}
+              type={microphoneOn ? 'micOn' : 'micOff'}
+              color={microphoneOn ? 'gray' : 'red'}
               onPress={() => {
-                setVoiceOn(!voiceOn);
+                dispatch(setMicrophoneOn(!microphoneOn));
               }}
             />
             <ActionButton type='roomLeave' onPress={onClose} color='red' />
