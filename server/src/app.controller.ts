@@ -16,7 +16,9 @@ export class AppController {
 
   @Get('rooms')
   getRooms(@Res() res) {
-    const rooms = this.OV.activeSessions.map((i) => i.sessionId);
+    const rooms = this.OV.activeSessions
+      .filter((i) => i.connections.length)
+      .map((i) => i.sessionId);
     res.send(rooms);
   }
 
