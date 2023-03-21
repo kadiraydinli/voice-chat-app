@@ -1,19 +1,17 @@
 version: '3.8'
 services:
-  ##############
-  ## MONGO_DB ##
-  mongo_db:
-    image: mongo
-    env_file:
-      - .env
-    networks:
-      - database
-    restart: always
+  #############
+  ## OPEN VIDU ##
+  openvidu:
+    image: openvidu/openvidu-dev:2.26.0
+    environment:
+      - OPENVIDU_SECRET=${OPENVIDU_SECRET}
     ports:
-      - ${DB_PORT}:27017
-    volumes:
-      - ./server/mongo-data:/data/db
-    container_name: mongo_db
+      - ${OPENVIDU_PORT}:4443
+    networks:
+      - webrtc
+    restart: always
+    container_name: openvidu
   ##############
   ## SERVER ##
   server:
@@ -22,15 +20,13 @@ services:
       dockerfile: Dockerfile
     networks:
       - webapp
-      - database
+      - webrtc
     env_file:
       - .env
     ports:
       - ${SERVER_PORT}:3000
     volumes:
       - ./server/src:/app/src
-    depends_on:
-      - mongo_db
     restart: always
     command: yarn start:dev
     container_name: server
@@ -47,6 +43,7 @@ services:
       - ./client/public:/app/public
     networks:
       - webapp
+      - webrtc
     ports:
       - ${CLIENT_PORT}:5173
     command: yarn dev
@@ -55,5 +52,5 @@ services:
 networks:
   webapp:
     driver: bridge
-  database:
+  webrtc:
     driver: bridge

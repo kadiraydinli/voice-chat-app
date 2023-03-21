@@ -4,7 +4,7 @@
   "description": "Voice Chat App",
   "scripts": {
     "setup": "cd client && yarn install && cd .. && cd server && yarn install && cd ..",
-    "up": "docker-compose -p voice-chat-app up -d",
+    "up": "docker-compose -p voice-chat-app up -d && echo 'Loading, OpenVidu may take a while to start. Please wait...' && sleep 30",
     "down": "docker-compose -p voice-chat-app down",
     "restart": "docker-compose -p voice-chat-app restart"
   },
