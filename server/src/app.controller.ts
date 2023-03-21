@@ -19,7 +19,9 @@ export class AppController {
     const rooms = this.OV.activeSessions
       .filter((i) => i.connections.length)
       .map((i) => i.sessionId);
-    res.send(rooms);
+
+    const uniqueRooms = [...new Set(rooms)];
+    res.send(uniqueRooms);
   }
 
   @Post('sessions')
