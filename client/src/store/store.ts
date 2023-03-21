@@ -8,7 +8,7 @@ export const store = configureStore({
   reducer: {
     ui: UISlice.reducer,
     user: UserSlice.reducer,
-    rooms: RoomsSlice.reducer,
+    room: RoomsSlice.reducer,
   },
 });
 

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useMemo } from 'react';
+import useOpenVidu from '../hooks/useOpenVidu';
 import Button from './Button';
 import Icon from './Icon';
 
@@ -7,12 +8,16 @@ type CreateTypes = 'room' | 'user';
 interface CreateModal {
   type: CreateTypes;
   visible: boolean;
-  onButton: (inputText: string) => void;
+  onButton: () => void;
   onClose?: () => void;
 }
 
 const CreateModal: React.FC<CreateModal> = ({ type, visible, onButton, onClose }) => {
-  const [text, setText] = useState<string>('');
+  const { userName, roomName, onChangeUserNameText, onChangeRoomText } = useOpenVidu();
+
+  const text = useMemo((): string => {
+    return type === 'user' ? userName : roomName;
+  }, [type, userName, roomName]);
 
   const texts = {
     user: {
@@ -27,12 +32,22 @@ const CreateModal: React.FC<CreateModal> = ({ type, visible, onButton, onClose }
 
   if (!visible) return null;
 
-  const onChangeText = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setText(e.target.value);
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (text.trim() !== '') {
+      onButton();
+    } else {
+      alert(`Please enter ${type} name`);
+    }
   };
 
-  const onSubmit = () => {
-    onButton(text);
+  const onChangeText = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (type === 'user') {
+      onChangeUserNameText(e.target.value);
+    }
+    if (type === 'room') {
+      onChangeRoomText(e.target.value);
+    }
   };
 
   const onClosePress = (e: React.MouseEvent<HTMLElement>) => {
@@ -51,7 +66,7 @@ const CreateModal: React.FC<CreateModal> = ({ type, visible, onButton, onClose }
             </div>
           )}
         </div>
-        <div className='p-3'>
+        <form className='p-3' onSubmit={onSubmit}>
           <input
             className='w-full border rounded p-2 mt-4 mb-6'
             type='text'
@@ -59,8 +74,8 @@ const CreateModal: React.FC<CreateModal> = ({ type, visible, onButton, onClose }
             value={text}
             onChange={onChangeText}
           />
-          <Button title='Create' onPress={onSubmit} />
-        </div>
+          <Button title='Create' />
+        </form>
       </div>
     </div>
   );

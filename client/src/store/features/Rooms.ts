@@ -1,25 +1,55 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import axios from 'axios';
+import { API_URL } from '../../api/api';
+import { StatusType } from '../types';
 
-export interface RoomsState {
-  id: string | null;
+export const getRooms = createAsyncThunk('rooms/getRooms', async () => {
+  const rooms = await axios.get(API_URL + '/rooms', {
+    headers: { 'Content-Type': 'application/json' },
+  });
+  return rooms.data;
+});
+
+export interface RoomState {
   name: string;
-  userId: string | null;
+  token: string;
+}
+export interface RoomsState {
+  status: StatusType;
+  rooms: string[];
+  currentRoom: RoomState;
 }
 
 const initialState: RoomsState = {
-  id: null,
-  name: '',
-  userId: null,
+  status: 'idle',
+  rooms: [],
+  currentRoom: {
+    name: '',
+    token: '',
+  },
 };
 
 export const RoomsSlice = createSlice({
   name: 'RoomsSlice',
   initialState,
   reducers: {
-    setRooms: (state, action: PayloadAction<RoomsState>) => {
-      state = action.payload;
+    setRoomName: (state, action: PayloadAction<string>) => {
+      state.currentRoom.name = action.payload;
     },
+  },
+  extraReducers(builder) {
+    builder
+      .addCase(getRooms.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(getRooms.fulfilled, (state, action) => {
+        state.status = 'idle';
+        state.rooms = action.payload;
+      })
+      .addCase(getRooms.rejected, (state) => {
+        state.status = 'failed';
+      });
   },
 });
 
-export const { setRooms } = RoomsSlice.actions;
+export const { setRoomName } = RoomsSlice.actions;

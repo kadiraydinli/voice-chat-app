@@ -1,50 +1,70 @@
-import React, { useEffect } from 'react';
-import { setMicrophoneOn } from '../../store/features/UI';
+import React, { useCallback, useEffect } from 'react';
+import useOpenVidu from '../../hooks/useOpenVidu';
+import { setMicrophoneOn, setModalVisible } from '../../store/features/UI';
 import { useAppDispatch, useAppSelector } from '../../store/store';
 import ActionButton from '../ActionButton';
 import { calculateWidth } from './helper';
 import UserCard from './UserCard';
 
 interface RoomModalProps {
-  visible: boolean;
-  onClose: (e: React.MouseEvent<HTMLElement>) => void;
+  selectedRoomName: string;
 }
 
-const RoomModal: React.FC<RoomModalProps> = ({ visible, onClose }) => {
-  const { microphoneOn } = useAppSelector((state) => state.ui);
+const RoomModal: React.FC<RoomModalProps> = ({ selectedRoomName }) => {
+  const { joinSession, onLeave, soundToggle, roomName, publisher, subscribers } = useOpenVidu();
+  const {
+    microphoneOn,
+    modalVisible: { room: roomModalVisible },
+  } = useAppSelector((state) => state.ui);
   const dispatch = useAppDispatch();
 
+  const onCloseRoomModal = useCallback(
+    (e: React.MouseEvent<HTMLElement>) => {
+      e.preventDefault();
+      onLeave();
+      dispatch(setModalVisible({ type: 'room', status: false }));
+    },
+    [dispatch, onLeave],
+  );
+
   useEffect(() => {
-    document.body.style.overflow = visible ? 'hidden' : 'unset';
-  }, [visible]);
+    if (roomModalVisible) {
+      joinSession(selectedRoomName);
+    }
+  }, [joinSession, onLeave, roomModalVisible, selectedRoomName]);
 
-  const data = [1, 2, 3, 4];
+  useEffect(() => {
+    document.body.style.overflow = roomModalVisible ? 'hidden' : 'unset';
+  }, [roomModalVisible]);
 
-  if (!visible) return null;
+  if (!roomModalVisible) return null;
 
-  const calWidth = calculateWidth(data.length);
+  const users = [publisher, ...subscribers];
+
+  const calWidth = calculateWidth(users.length);
 
   return (
     <div className='fixed inset-0 bg-black bg-opacity-10 backdrop-blur-sm flex justify-center items-center overflow-hidden'>
       <div className='flex flex-col w-[90%] h-[90%] bg-white rounded'>
         <div className='flex items-center justify-between border-b p-2'>
-          <p className='ml-1 text-xl'>{'ODA 1'}</p>
+          <p className='ml-1 text-xl'>{roomName}</p>
         </div>
         <div className='flex flex-1 p-3 flex-col overflow-hidden'>
           <div className='flex flex-1 flex-row flex-wrap overflow-scroll'>
-            {data.map((_, index) => (
-              <UserCard key={index} name='user' style={calWidth} />
+            {users.map((item, index) => (
+              <UserCard key={index} user={item} style={calWidth} />
             ))}
           </div>
           <div className='flex justify-center gap-10 pt-3'>
             <ActionButton
-              type={microphoneOn ? 'micOn' : 'micOff'}
-              color={microphoneOn ? 'gray' : 'red'}
+              type={microphoneOn ? 'micOff' : 'micOn'}
+              color={microphoneOn ? 'red' : 'gray'}
               onPress={() => {
+                soundToggle();
                 dispatch(setMicrophoneOn(!microphoneOn));
               }}
             />
-            <ActionButton type='roomLeave' onPress={onClose} color='red' />
+            <ActionButton type='roomLeave' onPress={onCloseRoomModal} color='red' />
           </div>
         </div>
       </div>
