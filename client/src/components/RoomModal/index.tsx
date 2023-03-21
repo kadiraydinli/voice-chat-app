@@ -39,9 +39,9 @@ const RoomModal: React.FC<RoomModalProps> = ({ selectedRoomName }) => {
 
   if (!roomModalVisible) return null;
 
-  const users = [publisher, ...subscribers];
+  const userCount = [publisher, ...subscribers];
 
-  const calWidth = calculateWidth(users.length);
+  const calWidth = calculateWidth(userCount.length);
 
   return (
     <div className='fixed inset-0 bg-black bg-opacity-10 backdrop-blur-sm flex justify-center items-center overflow-hidden'>
@@ -51,8 +51,9 @@ const RoomModal: React.FC<RoomModalProps> = ({ selectedRoomName }) => {
         </div>
         <div className='flex flex-1 p-3 flex-col overflow-hidden'>
           <div className='flex flex-1 flex-row flex-wrap overflow-scroll'>
-            {users.map((item, index) => (
-              <UserCard key={index} user={item} style={calWidth} />
+            <UserCard publisher={publisher} style={calWidth} />
+            {subscribers.map((item, index) => (
+              <UserCard key={index} subscriber={item} style={calWidth} />
             ))}
           </div>
           <div className='flex justify-center gap-10 pt-3'>
