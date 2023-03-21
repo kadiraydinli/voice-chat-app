@@ -6,6 +6,7 @@ services:
     image: openvidu/openvidu-dev:2.26.0
     environment:
       - OPENVIDU_SECRET=${OPENVIDU_SECRET}
+      - DOMAIN_OR_PUBLIC_IP=${OPENVIDU_IP}
     ports:
       - ${OPENVIDU_PORT}:4443
     networks:

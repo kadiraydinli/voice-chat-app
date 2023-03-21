@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "Voice Chat App",
   "scripts": {
-    "setup": "cd client && yarn install && cd .. && cd server && yarn install && cd ..",
-    "up": "docker-compose -p voice-chat-app up -d && echo 'Loading, OpenVidu may take a while to start. Please wait...' && sleep 30",
+    "setup": "cp .env.example .env && cd client && cp .env.example .env && yarn install && cd .. && cd server && cp .env.example .env && yarn install && cd ..",
+    "up": "docker-compose -p voice-chat-app up -d && echo 'Loading, OpenVidu may take a while to start. Please wait...' && sleep 10",
     "down": "docker-compose -p voice-chat-app down",
     "restart": "docker-compose -p voice-chat-app restart"
   },
