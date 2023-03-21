@@ -67,7 +67,7 @@ VITE_SERVER_URL=http://192.168.1.15
 Example:
 
 ```
-OPENVIDU_IP=http://192.168.1.15
+OPENVIDU_IP=192.168.1.15
 ```
 
 3. Open the Chrome browser on the other computer.
